@@ -8,4 +8,6 @@ Snake basis - ended.
 
 Working on more advance version
 
-File save partially done, trying to invert snake
+File save partially done, trying to invert snake - works. 
+
+Changing idea - adding timer

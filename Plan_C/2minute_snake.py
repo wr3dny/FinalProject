@@ -11,12 +11,11 @@ snake_color = colors_rgb.green
 lost_game_color = colors_rgb.cadmiumorange
 food_for_snake_color = colors_rgb.purple1
 close_screen_color = colors_rgb.wheat4
-close_screen_text1 = colors_rgb.white
+close_screen_text1 = colors_rgb.black
 close_screen_text2 = colors_rgb.red2
 close_screen_text3 = colors_rgb.green
 msg_color = colors_rgb.azure1
 score_color = colors_rgb.black
-
 
 
 display_width = 800
@@ -71,22 +70,22 @@ def score_read():
         return content
 
 
-# def timer(long):
-#     counter, text = 10, '10'.rjust(3)
-#     pygame.time.set_timer(pygame.USEREVENT, 1000)
-#
-#     run = True
-#     while run:
-#         for e in pygame.event.get():
-#             if e.type == pygame.USEREVENT:
-#                 counter += 1
-#                 text = str(counter).rjust(3) if counter > 0 else 'boom!'
-#             if e.type == pygame.QUIT:
-#                 run = False
-#     display.fill((255, 255, 255))
-#     display.blit(font.render(text, True, (0, 0, 0)), (32, 48))
-#     pygame.display.flip()
-#     clock.tick(60)
+def timer(long):
+    counter, text = 10, '10'.rjust(3)
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
+
+    run = True
+    while run:
+        for e in pygame.event.get():
+            if e.type == pygame.USEREVENT:
+                counter += 1
+                text = str(counter).rjust(3) if counter > 0 else 'boom!'
+            if e.type == pygame.QUIT:
+                run = False
+    display.fill((255, 255, 255))
+    display.blit(font.render(text, True, (0, 0, 0)), (32, 48))
+    pygame.display.flip()
+    clock.tick(60)
 
 
 
@@ -110,12 +109,9 @@ def main():
     while not game_over:
 
         while game_close == True:
-            scr = player_score(snake_length - 1)
-            score_save(str(scr))
-            display.fill(close_screen_color)
             message('You lost!', 'q - quit game', 'a - play again', close_screen_text1, close_screen_text2,
                     close_screen_text3)
-            player_score(snake_length - 1)
+            player_score(snake_length)
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -148,6 +144,9 @@ def main():
 # setting space boundaries
         if x1 >= display_width or x1 < 0 or y1 > display_height or y1 < 0:
             game_close = True
+# setting end
+        elif snake_length == 0:
+            game_close = True
 
         x1 += x1_change
         y1 += y1_change
@@ -159,7 +158,7 @@ def main():
         snake_head.append(x1)
         snake_head.append(y1)
         snake_list.append(snake_head)
-        # making 'move' - deleting firts square
+        # making 'move' - deleting first square
         if len(snake_list) > snake_length:
             del snake_list[0]
 
@@ -168,7 +167,7 @@ def main():
         #         game_close = True
 
         snake_current(snake_size, snake_list)
-        player_score(snake_length - 1)
+        player_score(snake_length)
 
         pygame.display.update()
 
@@ -176,16 +175,11 @@ def main():
             food_for_snakex = round(random.randrange(0, display_width - snake_size) / 10.0) * 10.0
             food_for_snakey = round(random.randrange(0, display_height - snake_size) / 10.0) * 10.0
             snake_length += 1
-            print('Gain weight')
 
         clock.tick(snake_speed)
 
-
     pygame.quit()
     quit()
-
-
-
 
 
 if __name__ == '__main__':
