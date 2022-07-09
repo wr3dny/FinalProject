@@ -6,14 +6,14 @@ import random
 print(pygame.font.get_fonts())
 pygame.init()
 
-screen_color = colors_rgb.seashell3
+screen_color = colors_rgb.bisque3
 snake_color = colors_rgb.green
 lost_game_color = colors_rgb.darkorchid
 food_for_snake_color = colors_rgb.purple1
 close_screen_color = colors_rgb.seashell2
 close_screen_text = colors_rgb.darkorchid
 msg_color = colors_rgb.azure1
-score_color = colors_rgb.blue
+score_color = colors_rgb.black
 
 
 
@@ -59,7 +59,6 @@ def gameloop():
     snake_list = []
     snake_length = 1
 
-
     food_for_snakex = round(random.randrange(0, display_width - snake_size) / 10.0) * 10.0
     food_for_snakey = round(random.randrange(0, display_height - snake_size)/ 10.0) * 10.0
 
@@ -98,7 +97,7 @@ def gameloop():
 
 # setting space boundaries
         if x1 >= display_width or x1 < 0 or y1 > display_height or y1 < 0:
-            game_over = True
+            game_close = True
 
         x1 += x1_change
         y1 += y1_change
