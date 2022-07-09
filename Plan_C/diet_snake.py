@@ -3,7 +3,7 @@ import time
 import colors_rgb
 import random
 
-print(pygame.font.get_fonts())
+# print(pygame.font.get_fonts())
 pygame.init()
 
 screen_color = colors_rgb.wheat
@@ -11,7 +11,9 @@ snake_color = colors_rgb.green
 lost_game_color = colors_rgb.cadmiumorange
 food_for_snake_color = colors_rgb.purple1
 close_screen_color = colors_rgb.wheat4
-close_screen_text = colors_rgb.greenyellow
+close_screen_text1 = colors_rgb.white
+close_screen_text2 = colors_rgb.red2
+close_screen_text3 = colors_rgb.green
 msg_color = colors_rgb.azure1
 score_color = colors_rgb.black
 
@@ -33,19 +35,62 @@ snake_speed = 10
 font_type = pygame.font.SysFont('gothici', 25)
 score_font = pygame.font.SysFont('gothici', 25)
 
+
 def player_score(score):
     value = score_font.render('Current score: ' + str(score), True, score_color)
     display.blit(value, [display_width /3, 0])
+
 
 def snake_current(snake_size, snake_list):
     for x in snake_list:
         pygame.draw.rect(display, snake_color, [x[0], x[1], snake_size, snake_size])
 
-def message(msg, color):
-    mesg = font_type.render(msg, True, color)
-    display.blit(mesg, [display_width / 9, display_height / 2])
 
-def gameloop():
+def message(msg1, msg2, msg3, color1, color2, color3):
+    mesg1 = font_type.render(msg1, True, color1)
+    display.blit(mesg1, [display_width / 15, display_height / 3])
+    mesg2 = font_type.render(msg2, True, color2)
+    display.blit(mesg2, [display_width / 15, display_height / 3 + 2 * 25])
+    mesg3 = font_type.render(msg3, True, color3)
+    display.blit(mesg3, [display_width / 15, display_height / 3 + 4 * 25])
+
+def score_msg(msg4, color4):
+    mesg4 = font_type.render(msg4, True, color4)
+    display.blit(mesg4, [display_width / 15, display_height / 3])
+
+
+def score_save(score):
+    with open('high_score.txt', 'a+') as f:
+        f.write(score)
+        f.close()
+
+def score_read():
+    with open('high_score.txt', 'r+') as f:
+        content = f.readline()
+        f.close()
+        return content
+
+
+# def timer(long):
+#     counter, text = 10, '10'.rjust(3)
+#     pygame.time.set_timer(pygame.USEREVENT, 1000)
+#
+#     run = True
+#     while run:
+#         for e in pygame.event.get():
+#             if e.type == pygame.USEREVENT:
+#                 counter += 1
+#                 text = str(counter).rjust(3) if counter > 0 else 'boom!'
+#             if e.type == pygame.QUIT:
+#                 run = False
+#     display.fill((255, 255, 255))
+#     display.blit(font.render(text, True, (0, 0, 0)), (32, 48))
+#     pygame.display.flip()
+#     clock.tick(60)
+
+
+
+def main():
     game_over = False
     game_close = False
 
@@ -65,8 +110,11 @@ def gameloop():
     while not game_over:
 
         while game_close == True:
+            scr = player_score(snake_length - 1)
+            score_save(str(scr))
             display.fill(close_screen_color)
-            message('You lost! Press "q" for quit or "a" for playing again', close_screen_text)
+            message('You lost!', 'q - quit game', 'a - play again', close_screen_text1, close_screen_text2,
+                    close_screen_text3)
             player_score(snake_length - 1)
             pygame.display.update()
 
@@ -75,8 +123,10 @@ def gameloop():
                     if event.key == pygame.K_q:
                         game_over = True
                         game_close = False
+                        hscore = score_read()
+                        score_msg(hscore, score_color)
                     if event.key == pygame.K_a:
-                        gameloop()
+                        main()
 # snake control
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -109,12 +159,13 @@ def gameloop():
         snake_head.append(x1)
         snake_head.append(y1)
         snake_list.append(snake_head)
+        # making 'move' - deleting firts square
         if len(snake_list) > snake_length:
             del snake_list[0]
 
-        for x in snake_list[:-1]:
-            if x == snake_head:
-                game_close = True
+        # for x in snake_list[:-1]:
+        #     if x == snake_head:
+        #         game_close = True
 
         snake_current(snake_size, snake_list)
         player_score(snake_length - 1)
@@ -128,12 +179,15 @@ def gameloop():
             print('Gain weight')
 
         clock.tick(snake_speed)
-        print(snake_length)
-        print(snake_head)
-        print(snake_list)
+
 
     pygame.quit()
     quit()
 
 
-gameloop()
+
+
+
+if __name__ == '__main__':
+    main()
+
