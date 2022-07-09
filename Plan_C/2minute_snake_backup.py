@@ -16,7 +16,6 @@ close_screen_text2 = colors_rgb.red2
 close_screen_text3 = colors_rgb.green
 msg_color = colors_rgb.azure1
 score_color = colors_rgb.black
-timer_color = colors_rgb.blue
 
 
 display_width = 800
@@ -38,39 +37,7 @@ score_font = pygame.font.SysFont('gothici', 25)
 
 def player_score(score):
     value = score_font.render('Current score: ' + str(score), True, score_color)
-    display.blit(value, [display_width / 3, 0])
-
-    time_counter = 0
-    text = font_type.render(str(time_counter), True, timer_color)
-
-    time_delay = 1000
-    timer_event = pygame.USEREVENT + 1
-    pygame.time.set_timer(timer_event, time_delay)
-
-    # main application loop
-    run = True
-    counter = 120
-    while run:
-        clock.tick(60)
-
-        # event loop
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            elif event.type == timer_event:
-                # recreate text
-                counter -= 1
-                text = font_type.render('You got: ' + str(counter), True, timer_color)
-
-        # clear the display
-        display.fill(screen_color)
-
-        # draw the scene
-        # text_rect = text.get_rect(center=display.get_rect().center)
-        display.blit(text, [0, 0])
-
-        # update the display
-        pygame.display.flip()
+    display.blit(value, [display_width /3, 0])
 
 
 def snake_current(snake_size, snake_list):
@@ -96,12 +63,30 @@ def score_save(score):
         f.write(score)
         f.close()
 
-
 def score_read():
     with open('high_score.txt', 'r+') as f:
         content = f.readline()
         f.close()
         return content
+
+
+def timer(long):
+    counter, text = 10, '10'.rjust(3)
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
+
+    run = True
+    while run:
+        for e in pygame.event.get():
+            if e.type == pygame.USEREVENT:
+                counter += 1
+                text = str(counter).rjust(3) if counter > 0 else 'boom!'
+            if e.type == pygame.QUIT:
+                run = False
+    display.fill((255, 255, 255))
+    display.blit(font_type.render(text, True, (0, 0, 0)), (32, 48))
+    pygame.display.flip()
+    clock.tick(60)
+
 
 
 def main():
@@ -120,46 +105,44 @@ def main():
 
     food_for_snakex = round(random.randrange(0, display_width - snake_size) / 10.0) * 10.0
     food_for_snakey = round(random.randrange(0, display_height - snake_size)/ 10.0) * 10.0
+    counter = 0
+    text = font.render(str(counter), True, (0, 128, 0))
 
-    time_counter = 120
-    text = font_type.render(str(time_counter), True, timer_color)
     time_delay = 1000
     timer_event = pygame.USEREVENT + 1
     pygame.time.set_timer(timer_event, time_delay)
-        
+
+    # main application loop
+    run = True
+    counter = 120
+    while run:
+        clock.tick(60)
+
+        # event loop
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == timer_event:
+                # recreate text
+                counter -= 1
+                text = font.render('You got: ' + str(counter), True, (0, 128, 0))
+
+        # clear the display
+        display.fill((255, 255, 255))
+
+        # draw the scene
+        text_rect = text.get_rect(center=display.get_rect().center)
+        display.blit(text, text_rect)
+
+        # update the display
+        pygame.display.flip()
+
     while not game_over:
-
-
-
-
-        # main application loop
-        run = True
-
-        while run:
-            clock.tick(60)
-
-            # event loop
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                elif event.type == timer_event:
-                    # recreate text
-                    time_counter -= 1
-                    text = font_type.render('You got: ' + str(time_counter), True, timer_color)
-
-            # clear the display
-            display.fill(screen_color)
-
-            # draw the scene
-            # text_rect = text.get_rect(center=display.get_rect().center)
-            display.blit(text, [0, 0])
-
-            # update the display
-            pygame.display.flip()
 
         while game_close == True:
             message('You lost!', 'q - quit game', 'a - play again', close_screen_text1, close_screen_text2,
                     close_screen_text3)
+            player_score(snake_length)
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -167,8 +150,8 @@ def main():
                     if event.key == pygame.K_q:
                         game_over = True
                         game_close = False
-                        # hscore = score_read()
-                        # score_msg(hscore, score_color)
+                        hscore = score_read()
+                        score_msg(hscore, score_color)
                     if event.key == pygame.K_a:
                         main()
 # snake control
@@ -216,7 +199,7 @@ def main():
 
         snake_current(snake_size, snake_list)
         player_score(snake_length)
-        display.blit(text, [0, 0])
+
         pygame.display.update()
 
         if x1 == food_for_snakex and y1 == food_for_snakey:
