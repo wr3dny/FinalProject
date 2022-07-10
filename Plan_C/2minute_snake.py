@@ -15,7 +15,7 @@ close_screen_text1 = colors_rgb.black
 close_screen_text2 = colors_rgb.red2
 close_screen_text3 = colors_rgb.green
 close_screen_text4 = colors_rgb.purple
-highscore_color = colors_rgb.blue
+lastscore_color = colors_rgb.blue
 msg_color = colors_rgb.azure1
 score_color = colors_rgb.black
 timer_color = colors_rgb.blue
@@ -39,40 +39,19 @@ score_font = pygame.font.SysFont('gothici', 25)
 
 
 def player_score(score):
-    value = score_font.render('Current score: ' + str(score), True, score_color)
+    value = score_font.render('Current score: ' + str(score - 1), True, score_color)
     display.blit(value, [display_width / 3, 0])
-#
-#     time_counter = 0
-#     text = font_type.render(str(time_counter), True, timer_color)
-#
-#     time_delay = 1000
-#     timer_event = pygame.USEREVENT + 1
-#     pygame.time.set_timer(timer_event, time_delay)
-#
-#     # main application loop
-#     run = True
-#     counter = 120
-#     while run:
-#         clock.tick(60)
-#
-#         # event loop
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 run = False
-#             elif event.type == timer_event:
-#                 # recreate text
-#                 counter -= 1
-#                 text = font_type.render('You got: ' + str(counter), True, timer_color)
-#
-#         # clear the display
-#         display.fill(screen_color)
-#
-#         # draw the scene
-#         # text_rect = text.get_rect(center=display.get_rect().center)
-#         display.blit(text, [0, 0])
-#
-#         # update the display
-#         pygame.display.flip()
+
+
+def file_save(added):
+    with open('high_score.txt', 'a+') as f:
+        f.write('\n' + added)
+
+
+def file_open(line):
+    with open('high_score.txt', 'r') as f:
+        last_lines = f.readlines()[-line]
+        return last_lines
 
 
 def snake_current(snake_size, snake_list):
@@ -91,22 +70,32 @@ def message(msg1, msg2, msg3, msg4, color1, color2, color3, color4):
     display.blit(mesg4, [display_width / 15, display_height / 3 + 6 * 25])
 
 
-def score_msg(msg4, color4):
-    mesg4 = font_type.render(msg4, True, color4)
-    display.blit(mesg4, [display_width / 2, display_height / 3])
+def score_msg(scr0, scr1, scr2, scr3, scr4, scr5, color4):
+    scr0 = font_type.render(scr0, True, color4)
+    display.blit(scr0, [display_width / 2, display_height / 3 - 2 * 25])
+    scr1 = font_type.render(scr1, True, color4)
+    display.blit(scr1, [display_width / 2, display_height / 3])
+    scr2 = font_type.render(scr2, True, color4)
+    display.blit(scr2, [display_width / 2, display_height / 3 + 2 * 25])
+    scr3 = font_type.render(scr3, True, color4)
+    display.blit(scr3, [display_width / 2, display_height / 3 + 4 * 25])
+    scr4 = font_type.render(scr4, True, color4)
+    display.blit(scr4, [display_width / 2, display_height / 3 + 6 * 25])
+    scr5 = font_type.render(scr5, True, color4)
+    display.blit(scr5, [display_width / 2, display_height / 3 + 8 * 25])
 
 
-def score_save(score):
-    with open('high_score.txt', 'a+') as f:
-        f.write(score)
-        f.close()
-
-
-def score_read():
-    with open('high_score.txt', 'r+') as f:
-        content = f.readline()
-        f.close()
-        return content
+# def score_save(score):
+#     with open('high_score.txt', 'a+') as f:
+#         f.write(score)
+#         f.close()
+#
+#
+# def score_read():
+#     with open('high_score.txt', 'r+') as f:
+#         content = f.readline()
+#         f.close()
+#         return content
 
 
 def main():
@@ -135,7 +124,6 @@ def main():
 
 
     while not game_over and not game_time:
-# sprobuj tu wstawić run time
         # # main application loop
         # run = True
         #
@@ -162,7 +150,9 @@ def main():
         #     pygame.display.flip()
 
         while game_close == True:
-            message('You lost!', 'q - quit game', 'p - play again', 'h - high score list', close_screen_text1,
+            # final_score = str(snake_length)
+            # file_save(final_score)
+            message('You lost!', 'q - quit game', 'p - play again', 's - last 5 scores', close_screen_text1,
                     close_screen_text2, close_screen_text3, close_screen_text4)
 
             pygame.display.update()
@@ -174,11 +164,20 @@ def main():
                         game_close = False
                     if event.key == pygame.K_p:
                         main()
-                    if event.key == pygame.K_h:
-                        hs_msg = 'High score:'
-                        score_msg(hs_msg, highscore_color)
+                    if event.key == pygame.K_s:
+                        top_text = 'Last 5 scores:'
+                        scr_line1 = file_open(1)
+                        scr_line2 = file_open(2)
+                        scr_line2 = scr_line2.replace('\n', '')
+                        scr_line3 = file_open(3)
+                        scr_line3 = scr_line3.replace('\n', '')
+                        scr_line4 = file_open(4)
+                        scr_line4 = scr_line4.replace('\n', '')
+                        scr_line5 = file_open(5)
+                        scr_line5 = scr_line5.replace('\n', '')
+                        score_msg(top_text, scr_line1, scr_line2, scr_line3, scr_line4, scr_line5, lastscore_color)
                         pygame.display.update()
-                        time.sleep(3)
+                        time.sleep(4)
                         main()
 
             pygame.display.update()
@@ -236,11 +235,14 @@ def main():
         display.blit(text, [0, 0])
         pygame.display.update()
 
+        score_to_save = 0
+
         if x1 == food_for_snakex and y1 == food_for_snakey:
             food_for_snakex = round(random.randrange(0, display_width - snake_size) / 10.0) * 10.0
             food_for_snakey = round(random.randrange(0, display_height - snake_size) / 10.0) * 10.0
             snake_length += 1
-            print(snake_length)
+
+
 
         clock.tick(snake_speed)
 
