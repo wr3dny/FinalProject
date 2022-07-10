@@ -14,7 +14,8 @@ close_screen_color = colors_rgb.wheat4
 close_screen_text1 = colors_rgb.black
 close_screen_text2 = colors_rgb.red2
 close_screen_text3 = colors_rgb.green
-close_screen_text4 = colors_rgb.mediumpurple
+close_screen_text4 = colors_rgb.purple
+highscore_color = colors_rgb.blue
 msg_color = colors_rgb.azure1
 score_color = colors_rgb.black
 timer_color = colors_rgb.blue
@@ -89,9 +90,10 @@ def message(msg1, msg2, msg3, msg4, color1, color2, color3, color4):
     mesg4 = font_type.render(msg4, True, color4)
     display.blit(mesg4, [display_width / 15, display_height / 3 + 6 * 25])
 
-# def score_msg(msg4, color4):
-#     mesg4 = font_type.render(msg4, True, color4)
-#     display.blit(mesg4, [display_width / 15, display_height / 3])
+
+def score_msg(msg4, color4):
+    mesg4 = font_type.render(msg4, True, color4)
+    display.blit(mesg4, [display_width / 2, display_height / 3])
 
 
 def score_save(score):
@@ -130,7 +132,8 @@ def main():
     time_delay = 1000
     timer_event = pygame.USEREVENT + 1
     pygame.time.set_timer(timer_event, time_delay)
-        
+
+
     while not game_over and not game_time:
 # sprobuj tu wstawić run time
         # # main application loop
@@ -161,7 +164,6 @@ def main():
         while game_close == True:
             message('You lost!', 'q - quit game', 'p - play again', 'h - high score list', close_screen_text1,
                     close_screen_text2, close_screen_text3, close_screen_text4)
-            # dopisać liniejke o highscore
 
             pygame.display.update()
 
@@ -173,11 +175,13 @@ def main():
                     if event.key == pygame.K_p:
                         main()
                     if event.key == pygame.K_h:
-                        # dorzucic messege
-                        print('High score\n 1 -\n 2- \n')
-                        time.sleep(4)
-                        game_over = True
-                        game_close = False
+                        hs_msg = 'High score:'
+                        score_msg(hs_msg, highscore_color)
+                        pygame.display.update()
+                        time.sleep(3)
+                        main()
+
+            pygame.display.update()
 
 # snake control
         for event in pygame.event.get():
@@ -236,6 +240,7 @@ def main():
             food_for_snakex = round(random.randrange(0, display_width - snake_size) / 10.0) * 10.0
             food_for_snakey = round(random.randrange(0, display_height - snake_size) / 10.0) * 10.0
             snake_length += 1
+            print(snake_length)
 
         clock.tick(snake_speed)
 

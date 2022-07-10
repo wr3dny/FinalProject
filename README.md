@@ -13,3 +13,5 @@ File save partially done, trying to invert snake - works.
 Changing idea - adding timer
 
 added time counter display, working on timer and high score list
+
+Score list placed, open, save and timer
