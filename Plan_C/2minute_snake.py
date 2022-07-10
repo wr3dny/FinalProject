@@ -2,6 +2,9 @@ import pygame
 import time
 import colors_rgb
 import random
+import datetime
+
+
 
 # print(pygame.font.get_fonts())
 pygame.init()
@@ -20,6 +23,7 @@ msg_color = colors_rgb.azure1
 score_color = colors_rgb.black
 timer_color = colors_rgb.blue
 
+today = datetime.date.today()
 
 display_width = 800
 display_height = 600
@@ -43,9 +47,18 @@ def player_score(score):
     display.blit(value, [display_width / 3, 0])
 
 
-def file_save(added):
-    with open('high_score.txt', 'a+') as f:
-        f.write('\n' + added)
+def dump_file_save(added):
+    with open('dump_file.txt', 'w') as f:
+        f.write(added)
+
+
+
+def file_save():
+    with open('dump_file.txt', 'r') as f:
+        last = f.readline()
+        with open('high_score.txt', 'a+') as fopen:
+            d1 = today
+            fopen.write('\n' + str(today) + ' - ' + last)
 
 
 def file_open(line):
@@ -84,26 +97,12 @@ def score_msg(scr0, scr1, scr2, scr3, scr4, scr5, color4):
     scr5 = font_type.render(scr5, True, color4)
     display.blit(scr5, [display_width / 2, display_height / 3 + 8 * 25])
 
-
-# def score_save(score):
-#     with open('high_score.txt', 'a+') as f:
-#         f.write(score)
-#         f.close()
-#
-#
-# def score_read():
-#     with open('high_score.txt', 'r+') as f:
-#         content = f.readline()
-#         f.close()
-#         return content
-
-
 def main():
     game_over = False
     game_close = False
-    game_time = False
 
-# snake starting position on screen 
+
+# snake starting position on screen
     x1 = display_width / 2
     y1 = display_height / 2
 
@@ -115,45 +114,31 @@ def main():
 
     food_for_snakex = round(random.randrange(0, display_width - snake_size) / 10.0) * 10.0
     food_for_snakey = round(random.randrange(0, display_height - snake_size) / 10.0) * 10.0
-
+# basic for counter - 120s , delay 1000 == 1s, set in upper left corner
     time_counter = 120
-    text = font_type.render(str(time_counter), True, timer_color)
     time_delay = 1000
-    timer_event = pygame.USEREVENT + 1
+    timer_event = game_over
+
+    text = font_type.render('You got: ' + str(time_counter), True, timer_color)
+    display.blit(text, [0, 0])
     pygame.time.set_timer(timer_event, time_delay)
 
+    for event in pygame.event.get():
+        if event.type == timer_event:
+            # recreate text
+            time_counter -= 1
+            text = font_type.render('You got: ' + str(time_counter), True, timer_color)
+        pygame.display.update()
 
-    while not game_over and not game_time:
-        # # main application loop
-        # run = True
-        #
-        # while run:
-        #     clock.tick(60)
-        #
-        #     # event loop
-        #     for event in pygame.event.get():
-        #         if event.type == pygame.QUIT:
-        #             run = False
-        #         elif event.type == timer_event:
-        #             # recreate text
-        #             time_counter -= 1
-        #             text = font_type.render('You got: ' + str(time_counter), True, timer_color)
-        #
-        #     # clear the display
-        #     display.fill(screen_color)
-        #
-        #     # draw the scene
-        #     # text_rect = text.get_rect(center=display.get_rect().center)
-        #     display.blit(text, [0, 0])
-        #
-        #     # update the display
-        #     pygame.display.flip()
+    while not game_over:
 
         while game_close == True:
-            # final_score = str(snake_length)
-            # file_save(final_score)
+            final_score = str(snake_length - 1)
+            dump_file_save(final_score)
+
             message('You lost!', 'q - quit game', 'p - play again', 's - last 5 scores', close_screen_text1,
                     close_screen_text2, close_screen_text3, close_screen_text4)
+
 
             pygame.display.update()
 
@@ -241,12 +226,14 @@ def main():
             food_for_snakex = round(random.randrange(0, display_width - snake_size) / 10.0) * 10.0
             food_for_snakey = round(random.randrange(0, display_height - snake_size) / 10.0) * 10.0
             snake_length += 1
+            print(snake_length)
 
 
 
         clock.tick(snake_speed)
-
+    file_save()
     pygame.quit()
+
     quit()
 
 

@@ -59,12 +59,12 @@ def score_msg(msg4, color4):
 
 
 def score_save(score):
-    with open('high_score.txt', 'a+') as f:
+    with open('../Plan_C/high_score.txt', 'a+') as f:
         f.write(score)
         f.close()
 
 def score_read():
-    with open('high_score.txt', 'r+') as f:
+    with open('../Plan_C/high_score.txt', 'r+') as f:
         content = f.readline()
         f.close()
         return content
